@@ -9,7 +9,7 @@ const ActionHistory = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const response = await axios.get("http://localhost:5000/api/actions/history", {
+        const response = await axios.get("https://eco-track-dsej.onrender.com/api/actions/history", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

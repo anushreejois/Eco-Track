@@ -12,7 +12,7 @@ const BadgesPage = () => {
   useEffect(() => {
     const fetchUserStats = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/user/stats", {
+        const res = await axios.get("https://eco-track-dsej.onrender.com/api/user/stats", {
           headers: { Authorization: `Bearer ${getAuthToken()}` },
         });
         setUserData(res.data);

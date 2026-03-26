@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   const fetchUserStats = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/user/stats", {
+      const res = await axios.get("https://eco-track-dsej.onrender.com/api/user/stats", {
         headers: { Authorization: `Bearer ${getAuthToken()}` },
       });
       setStats(res.data);
@@ -23,7 +23,7 @@ const Dashboard = () => {
 
   const fetchImpactSummary = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/user/summary", {
+      const res = await axios.get("https://eco-track-dsej.onrender.com/api/user/summary", {
         headers: { Authorization: `Bearer ${getAuthToken()}` },
       });
       setImpactSummary(res.data.summary);
