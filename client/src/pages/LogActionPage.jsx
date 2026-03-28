@@ -4,6 +4,9 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+// ✅ Use env variable instead of hardcoding
+const BASE_URL = process.env.REACT_APP_API_URL;
+
 const LogActionPage = () => {
   const [actionType, setActionType] = useState("");
   const [amount, setAmount] = useState("");
@@ -18,11 +21,21 @@ const LogActionPage = () => {
     }
 
     try {
+      // ✅ Get token safely
       const token = localStorage.getItem("token");
 
+      if (!token) {
+        toast.error("Session expired. Please login again.");
+        navigate("/login");
+        return;
+      }
+
       const response = await axios.post(
-        "http://localhost:5000/api/actions/log",
-        { action_type: actionType, amount: parseFloat(amount) },
+        `${BASE_URL}/api/actions/log`,
+        {
+          action_type: actionType,
+          amount: parseFloat(amount),
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -32,29 +45,54 @@ const LogActionPage = () => {
 
       const { xpGained, newLevel, badges } = response.data;
 
-      // 🔁 Update user in localStorage
-      const user = JSON.parse(localStorage.getItem("user"));
-      user.xp += xpGained;
-      user.level = newLevel;
-      user.badges = badges;
-      localStorage.setItem("user", JSON.stringify(user));
+      // ✅ Safe update of user
+      const user = JSON.parse(localStorage.getItem("user")) || {};
+
+      const updatedUser = {
+        ...user,
+        xp: (user.xp || 0) + xpGained,
+        level: newLevel,
+        badges: badges,
+      };
+
+      localStorage.setItem("user", JSON.stringify(updatedUser));
 
       toast.success(`Action logged! +${xpGained} XP 🎉`);
-      setTimeout(() => navigate("/dashboard"), 1500);
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
+
     } catch (error) {
-      toast.error("Failed to log action.");
-      console.error(error);
+      console.error("LOG ACTION ERROR:", error);
+
+      // ✅ Better error handling
+      if (error.response?.status === 403) {
+        toast.error("Unauthorized. Please login again.");
+        localStorage.clear();
+        navigate("/login");
+      } else {
+        toast.error("Failed to log action.");
+      }
     }
   };
 
   return (
     <div className="min-h-screen bg-green-50 flex items-center justify-center p-4">
       <ToastContainer position="top-center" autoClose={2000} />
+
       <div className="bg-white rounded-xl shadow-xl p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-green-700">🌿 Log Your Eco Action</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-green-700">
+          🌿 Log Your Eco Action
+        </h2>
+
         <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* Action Type */}
           <div>
-            <label className="block text-sm font-medium mb-1">Action Type</label>
+            <label className="block text-sm font-medium mb-1">
+              Action Type
+            </label>
             <select
               value={actionType}
               onChange={(e) => setActionType(e.target.value)}
@@ -69,8 +107,11 @@ const LogActionPage = () => {
             </select>
           </div>
 
+          {/* Amount */}
           <div>
-            <label className="block text-sm font-medium mb-1">Amount</label>
+            <label className="block text-sm font-medium mb-1">
+              Amount
+            </label>
             <input
               type="number"
               placeholder="e.g. 2.5"
@@ -80,12 +121,14 @@ const LogActionPage = () => {
             />
           </div>
 
+          {/* Button */}
           <button
             type="submit"
             className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold transition duration-300"
           >
             Log Action
           </button>
+
         </form>
       </div>
     </div>
