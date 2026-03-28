@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 import 'react-toastify/dist/ReactToastify.css';
 
 const RegisterPage = () => {
@@ -21,30 +22,25 @@ const RegisterPage = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await fetch("http://localhost:5000/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, username, password }),
-      });
+try {
+  const BASE_URL = process.env.REACT_APP_API_URL;
 
-      const data = await response.json();
+  const response = await axios.post(`${BASE_URL}/api/register`, {
+    email,
+    username,
+    password,
+  });
 
-      if (!response.ok) {
-        toast.error(data.message || "Registration failed");
-        return;
-      }
+  const data = response.data;
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      toast.success("Registration successful 🎉");
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("user", JSON.stringify(data.user));
+  toast.success("Registration successful 🎉");
 
-      setTimeout(() => navigate("/dashboard"), 1000);
-    } catch (err) {
-      toast.error("Something went wrong. Try again.");
-    }
+  setTimeout(() => navigate("/dashboard"), 1000);
+} catch (err) {
+  toast.error(err.response?.data?.message || "Something went wrong. Try again.");
+}
   };
 
   return (
