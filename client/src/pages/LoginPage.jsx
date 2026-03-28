@@ -1,7 +1,11 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios";
+
+import { BASE_URL, getAuthToken } from "../utils/api";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -22,16 +26,15 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await fetch("https://eco-track-dsej.onrender.com/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+try {
+  const response = await axios.post(`${BASE_URL}/api/login`, {
+    email,
+    password,
+  });
 
-      const data = await response.json();
+  const data = response.data;
 
-      if (!response.ok) {
+  if (response.status !== 200) {
         toast.error(data.message || "Login failed");
         return;
       }

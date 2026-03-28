@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import BadgeDisplay from "../components/BadgeDisplay";
-import { getAuthToken } from "../utils/api";
+import { BASE_URL, getAuthToken } from "../utils/api";
 
 const BadgesPage = () => {
   const [userData, setUserData] = useState({ badges: [], xp: 0, level: 1 });
@@ -12,7 +12,7 @@ const BadgesPage = () => {
   useEffect(() => {
     const fetchUserStats = async () => {
       try {
-        const res = await axios.get("https://eco-track-dsej.onrender.com/api/user/stats", {
+        const res = await axios.get(`${BASE_URL}/api/user/stats`, {
           headers: { Authorization: `Bearer ${getAuthToken()}` },
         });
         setUserData(res.data);

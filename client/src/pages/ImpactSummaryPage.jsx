@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { BASE_URL } from "../utils/api";
 
 const COLORS = ["#34d399", "#60a5fa", "#fbbf24", "#f472b6", "#a78bfa", "#f87171"];
 
@@ -23,7 +24,7 @@ const ImpactSummaryPage = () => {
   useEffect(() => {
     const fetchImpactSummary = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/user/summary", {
+        const res = await axios.get(`${BASE_URL}/api/user/summary`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         // Parse amount as number
