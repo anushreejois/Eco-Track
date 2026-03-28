@@ -17,5 +17,6 @@ pool.on("connect", () => {
 pool.on("error", (err) => {
   console.error("❌ DB error:", err);
 });
+console.log("DB URL:", process.env.DATABASE_URL);
 
 module.exports = pool;
