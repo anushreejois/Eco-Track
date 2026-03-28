@@ -6,7 +6,8 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false,
   },
-  family: 4, // 🔥 VERY IMPORTANT (fix IPv6 error)
+  // 🔥 FORCE IPv4 (THIS IS THE REAL FIX)
+  host: process.env.DATABASE_URL.split("@")[1].split(":")[0],
 });
 
 pool.on("connect", () => {
